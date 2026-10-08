@@ -22,7 +22,7 @@ import {
 } from 'react-icons/pi'
 import { MAX_VIDEO_MB, MAX_VIDEO_BYTES, EMPTY_VIDEO, formatBytes, checkVideoFile as checkFile } from '../../lib/video'
 
-const MAX_RECORD_SECONDS = 180 // 3 minutes at ~2.5 Mbps stays well under the size limit
+const MAX_RECORD_SECONDS = 180 
 const RECORD_BITRATE = 2_500_000
 const COUNTDOWN_FROM = 3
 
