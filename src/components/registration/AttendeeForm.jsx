@@ -5,7 +5,6 @@ import { PiTicketDuotone } from "react-icons/pi";
 
 import Field from "./Field";
 import { fieldAria } from "../../lib/fieldAria";
-
 import {
   SubmitButton,
   SubmitError,
@@ -14,7 +13,6 @@ import {
 
 import { attendeeSchema } from "../../lib/schemas";
 import { ATTENDEE_NOTE, EVENT } from "../../data/event";
-
 import attendFormStore from "../../zustand/Store/attendFormStore";
 
 export default function AttendeeForm({ onSuccess }) {
@@ -24,21 +22,17 @@ export default function AttendeeForm({ onSuccess }) {
     (state) => state.registerAttendee
   );
 
-  const loading = attendFormStore(
-    (state) => state.loading
-  );
+  const loading = attendFormStore((state) => state.loading);
+  const storeError = attendFormStore((state) => state.error);
 
   const {
     register,
     handleSubmit,
-    formState: {
-      errors,
-      isSubmitting,
-    },
+    formState: { errors, isSubmitting },
+    reset,
   } = useForm({
     resolver: zodResolver(attendeeSchema),
     mode: "onTouched",
-
     defaultValues: {
       name: "",
       phone: "",
@@ -50,51 +44,59 @@ export default function AttendeeForm({ onSuccess }) {
   const onSubmit = async (values) => {
     setSubmitError("");
 
+    const payload = {
+      name: values.name.trim(),
+      phone: values.phone.trim(),
+      email: values.email.trim().toLowerCase(),
+      consent: values.consent,
+    };
+
+    console.log("Submitting attendee registration:", payload);
+
     try {
-      const payload = {
-        name: values.name.trim(),
-        phone: values.phone.trim(),
-        email: values.email.trim().toLowerCase(),
-        consent: values.consent,
-      };
-
-      console.log("Submitting attendee:", payload);
-
       const response = await registerAttendee(payload);
 
-      console.log(
-        "Attendee registration successful:",
-        response
-      );
+      if (!response?.success) {
+        throw new Error(
+          response?.message || "Registration failed."
+        );
+      }
+
+      reset();
 
       onSuccess?.({
         type: "attendee",
-        name: values.name,
-        registration: response,
+        name: payload.name,
+        registration: response.data,
       });
     } catch (error) {
-      console.error(
-        "Attendee registration failed:",
-        error
-      );
+      console.error("Attendee registration failed:", error);
 
-      const message =
+      setSubmitError(
         error?.response?.data?.message ||
         error?.response?.data?.error ||
         error?.message ||
-        "Unable to register. Please try again.";
-
-      setSubmitError(message);
+        storeError ||
+        "Unable to register. Please try again."
+      );
     }
   };
 
+  const onInvalid = (validationErrors) => {
+    console.error(
+      "Form validation failed:",
+      validationErrors
+    );
+  };
+
+  const submitting = isSubmitting || loading;
+
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
       noValidate
       className="space-y-5"
     >
-      {/* Invitation information */}
       <div className="flex gap-3 rounded-2xl bg-orange/8 p-4 ring-1 ring-orange/25">
         <PiTicketDuotone
           className="mt-0.5 size-6 shrink-0 text-orange"
@@ -106,7 +108,6 @@ export default function AttendeeForm({ onSuccess }) {
         </p>
       </div>
 
-      {/* Full Name */}
       <Field
         id="a-name"
         label="Full name"
@@ -123,7 +124,6 @@ export default function AttendeeForm({ onSuccess }) {
         />
       </Field>
 
-      {/* Phone */}
       <Field
         id="a-phone"
         label="Phone number"
@@ -136,7 +136,6 @@ export default function AttendeeForm({ onSuccess }) {
         />
       </Field>
 
-      {/* Email */}
       <Field
         id="a-email"
         label="Email address"
@@ -153,7 +152,6 @@ export default function AttendeeForm({ onSuccess }) {
         />
       </Field>
 
-      {/* Consent */}
       <div>
         <label
           htmlFor="a-consent"
@@ -163,9 +161,7 @@ export default function AttendeeForm({ onSuccess }) {
             id="a-consent"
             type="checkbox"
             className="mt-0.5 size-5 shrink-0 cursor-pointer accent-orange"
-            aria-invalid={
-              errors.consent ? "true" : "false"
-            }
+            aria-invalid={errors.consent ? "true" : "false"}
             aria-describedby={
               errors.consent
                 ? "a-consent-error"
@@ -175,9 +171,9 @@ export default function AttendeeForm({ onSuccess }) {
           />
 
           <span className="text-[0.95rem] font-semibold text-navy">
-            I understand that entry is strictly by
-            invitation only, and that this registration
-            is a request for an invitation.
+            I understand that entry is strictly by invitation
+            only, and that this registration is a request for
+            an invitation.
           </span>
         </label>
 
@@ -192,19 +188,14 @@ export default function AttendeeForm({ onSuccess }) {
         )}
       </div>
 
-      {/* API Error */}
-      <SubmitError message={submitError} />
+      <SubmitError message={submitError || storeError} />
 
-      {/* Submit */}
-      <SubmitButton
-        submitting={isSubmitting || loading}
-      >
-        {loading
+      <SubmitButton submitting={submitting}>
+        {submitting
           ? "Requesting invitation..."
           : "Request my invitation"}
       </SubmitButton>
 
-      {/* Event Date */}
       <p className="text-center text-sm text-slate">
         Event date: {EVENT.eventDateLabel}
       </p>

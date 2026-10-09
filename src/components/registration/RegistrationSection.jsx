@@ -37,9 +37,8 @@ function ContextPanel({ mode, participateOpen }) {
             {JOURNEY.map((step, i) => (
               <li key={step.title} className="flex items-center gap-3">
                 <span
-                  className={`grid size-8 shrink-0 place-items-center rounded-full font-display text-sm font-bold ${
-                    i === 0 ? 'bg-orange text-white' : 'bg-white/10 text-white'
-                  }`}
+                  className={`grid size-8 shrink-0 place-items-center rounded-full font-display text-sm font-bold ${i === 0 ? 'bg-orange text-white' : 'bg-white/10 text-white'
+                    }`}
                 >
                   {i + 1}
                 </span>

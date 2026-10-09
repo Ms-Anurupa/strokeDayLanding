@@ -14,7 +14,7 @@ const attendFormStore = create((set) => ({
 
         try {
             const response = await api.post(
-                `/attendees/register`,
+                `http://localhost:5000/attendees/register`,
                 payload
             );
 

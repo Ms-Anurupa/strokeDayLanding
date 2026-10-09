@@ -53,7 +53,7 @@ export default function ParticipantForm({ onSuccess }) {
     defaultValues: {
       name: "",
       age: "",
-      mobile: "",
+      phone: "",
       email: "",
       category: "",
       video: EMPTY_VIDEO,
@@ -62,93 +62,93 @@ export default function ParticipantForm({ onSuccess }) {
   });
 
   const onSubmit = async (values) => {
-  setSubmitError("");
-  setUploadProgress(0);
+    setSubmitError("");
+    setUploadProgress(0);
 
-  try {
-    const { video, ...fields } = values;
+    try {
+      const { video, ...fields } = values;
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    formData.append("fullName", fields.name?.trim() || "");
-    formData.append("email", fields.email?.trim().toLowerCase() || "");
-    formData.append("phone", fields.mobile?.trim() || "");
-    formData.append("age", String(fields.age || ""));
-    formData.append("gender", "");
-    formData.append("city", "");
-    formData.append("talentCategory", fields.category || "");
-    formData.append("performanceTitle", "");
-    formData.append("performanceDuration", "");
-    formData.append(
-      "consent",
-      fields.consent ? "true" : "false"
-    );
+      formData.append("fullName", fields.name?.trim() || "");
+      formData.append("email", fields.email?.trim().toLowerCase() || "");
+      formData.append("phone", fields.phone?.trim() || "");
+      formData.append("age", String(fields.age || ""));
+      formData.append("gender", "");
+      formData.append("city", "");
+      formData.append("talentCategory", fields.category || "");
+      formData.append("performanceTitle", "");
+      formData.append("performanceDuration", "");
+      formData.append(
+        "consent",
+        fields.consent ? "true" : "false"
+      );
 
-    if (
-      !video?.file ||
-      !(video.file instanceof File)
-    ) {
-      throw new Error("Please select a performance video.");
-    }
-
-    formData.append(
-      "video",
-      video.file,
-      video.file.name
-    );
-    console.log("Sending participant registration:");
-
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(key, {
-          name: value.name,
-          type: value.type,
-          size: value.size,
-        });
-      } else {
-        console.log(key, value);
+      if (
+        !video?.file ||
+        !(video.file instanceof File)
+      ) {
+        throw new Error("Please select a performance video.");
       }
-    }
 
-    const response = await registerParticipant(
-      formData,
-      {
-        onProgress: (percent) => {
-          setUploadProgress(percent);
-        },
+      formData.append(
+        "video",
+        video.file,
+        video.file.name
+      );
+      console.log("Sending participant registration:");
+
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(key, {
+            name: value.name,
+            type: value.type,
+            size: value.size,
+          });
+        } else {
+          console.log(key, value);
+        }
       }
-    );
 
-    console.log(
-      "Participant registration successful:",
-      response
-    );
+      const response = await registerParticipant(
+        formData,
+        {
+          onProgress: (percent) => {
+            setUploadProgress(percent);
+          },
+        }
+      );
 
-    const category = CATEGORIES.find(
-      (item) => item.id === values.category
-    );
+      console.log(
+        "Participant registration successful:",
+        response
+      );
 
-    onSuccess?.({
-      type: "participant",
-      name: values.name,
-      category: category?.name || values.category,
-      registration: response,
-    });
+      const category = CATEGORIES.find(
+        (item) => item.id === values.category
+      );
 
-  } catch (error) {
-    console.error(
-      "Participant registration failed:",
-      error
-    );
+      onSuccess?.({
+        type: "participant",
+        name: values.name,
+        category: category?.name || values.category,
+        registration: response,
+      });
 
-    const message ="Unable to register participant. Please try again.";
+    } catch (error) {
+      console.error(
+        "Participant registration failed:",
+        error
+      );
 
-    setSubmitError(message);
+      const message = "Unable to register participant. Please try again.";
 
-  } finally {
-    setUploadProgress(null);
-  }
-};
+      setSubmitError(message);
+
+    } finally {
+      setUploadProgress(null);
+    }
+  };
 
 
   const submitting =
@@ -180,7 +180,7 @@ export default function ParticipantForm({ onSuccess }) {
         />
       </Field>
 
-      {/* Age + Mobile */}
+      {/* Age + phone */}
       <div className="grid gap-5 sm:grid-cols-[0.6fr_1.4fr]">
         <Field
           id="p-age"
@@ -206,17 +206,17 @@ export default function ParticipantForm({ onSuccess }) {
         </Field>
 
         <Field
-          id="p-mobile"
-          label="Mobile number"
-          error={errors.mobile?.message}
+          id="p-phone"
+          label="Phone number"
+          error={errors.phone?.message}
         >
           <MobileInput
-            id="p-mobile"
+            id="p-phone"
             {...fieldAria(
-              "p-mobile",
-              errors.mobile
+              "p-phone",
+              errors.phone
             )}
-            {...register("mobile")}
+            {...register("phone")}
           />
         </Field>
       </div>

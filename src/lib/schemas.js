@@ -9,7 +9,7 @@ const name = z
   .max(80, 'Name must be 80 characters or fewer.')
   .regex(/^[\p{L} .'-]+$/u, 'Use letters only in your name.')
 
-const mobile = z
+const phone = z
   .string()
   .trim()
   .transform((v) => v.replace(/[\s-]/g, '').replace(/^(\+91|0)/, ''))
@@ -24,7 +24,7 @@ export const participantSchema = z.object({
     .int('Enter your age in whole years.')
     .min(EVENT.minAge, `Participants must be ${EVENT.minAge} years or older.`)
     .max(100, 'Enter a valid age.'),
-  mobile,
+  phone,
   email,
   category: z.enum(['singing', 'dancing', 'stand-up-comedy'], {
     error: 'Choose the category you will perform in.',
@@ -62,7 +62,7 @@ export const participantSchema = z.object({
 
 export const attendeeSchema = z.object({
   name,
-  mobile,
+  phone,
   email,
   consent: z.literal(true, {
     error: 'Tick the box to confirm you understand entry is by invitation only.',
