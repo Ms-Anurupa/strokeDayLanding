@@ -26,23 +26,17 @@ import participantFormStore from "../../zustand/Store/participantFormStore";
 
 export default function ParticipantForm({ onSuccess }) {
   const [submitError, setSubmitError] = useState("");
-
-  // Zustand
   const registerParticipant = participantFormStore(
     (state) => state.registerParticipant
   );
-
   const loading = participantFormStore(
     (state) => state.loading
   );
-
   const storeError = participantFormStore(
     (state) => state.error
   );
-
   const [uploadProgress, setUploadProgress] =
     useState(null);
-
   const {
     register,
     control,
@@ -76,29 +70,20 @@ export default function ParticipantForm({ onSuccess }) {
 
     const formData = new FormData();
 
-    // Backend field names
     formData.append("fullName", fields.name?.trim() || "");
     formData.append("email", fields.email?.trim().toLowerCase() || "");
     formData.append("phone", fields.mobile?.trim() || "");
     formData.append("age", String(fields.age || ""));
     formData.append("gender", "");
     formData.append("city", "");
-
-    // IMPORTANT:
-    // Backend expects:
-    // SINGING | DANCING | STANDUP_COMEDY
     formData.append("talentCategory", fields.category || "");
-
     formData.append("performanceTitle", "");
     formData.append("performanceDuration", "");
-
-    // Backend accepts "true" or true
     formData.append(
       "consent",
       fields.consent ? "true" : "false"
     );
 
-    // Backend requires req.file
     if (
       !video?.file ||
       !(video.file instanceof File)
@@ -111,8 +96,6 @@ export default function ParticipantForm({ onSuccess }) {
       video.file,
       video.file.name
     );
-
-    // Debug
     console.log("Sending participant registration:");
 
     for (const [key, value] of formData.entries()) {
@@ -158,12 +141,7 @@ export default function ParticipantForm({ onSuccess }) {
       error
     );
 
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.message ||
-      storeError ||
-      "Unable to register participant. Please try again.";
+    const message ="Unable to register participant. Please try again.";
 
     setSubmitError(message);
 
@@ -171,6 +149,8 @@ export default function ParticipantForm({ onSuccess }) {
     setUploadProgress(null);
   }
 };
+
+
   const submitting =
     isSubmitting || loading;
 
