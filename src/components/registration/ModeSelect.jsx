@@ -22,7 +22,7 @@ export default function ModeSelect({ value, onChange, participateOpen }) {
       <legend className="font-display text-2xl font-extrabold text-navy">What would you like to do?</legend>
       <p className="mt-1 text-slate">Choose one. Performers and guests register separately.</p>
 
-      <div role="radiogroup" className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div role="radiogroup" className="mt-5 mb-5 grid gap-3 sm:grid-cols-2">
         {OPTIONS.map((opt) => {
           const selected = value === opt.value
           const closed = opt.value === 'participate' && !participateOpen

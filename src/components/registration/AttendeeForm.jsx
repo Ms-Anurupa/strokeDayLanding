@@ -72,13 +72,7 @@ export default function AttendeeForm({ onSuccess }) {
     } catch (error) {
       console.error("Attendee registration failed:", error);
 
-      setSubmitError(
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message ||
-        storeError ||
-        "Unable to register. Please try again."
-      );
+      setSubmitError("Unable to register. Please try again.");
     }
   };
 
